@@ -13,10 +13,18 @@ type cliCommand struct {
 }
 
 func commandHelp () error {
+	fmt.Println()
 	fmt.Println("Welcome to the Pokedex!")
+	fmt.Println("Usage:")
+	fmt.Println()
+	fmt.Println("help: Displays a help message")
+	fmt.Println("exit: Exit the Pokedex")
+	fmt.Println()
+	return nil
 }
 
 func commandExit() error {
+	os.Exit(0)
 	return nil
 }
 
@@ -38,13 +46,13 @@ func getCliCommand() map[string]cliCommand {
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
-		fmt.Print("Pokedex >")
+		fmt.Print("Pokedex > ")
 		scanner.Scan()
 		userInput := scanner.Text()
 		if userInput == "help" {
-			getCliCommand()["help"]
+			fmt.Print(getCliCommand()["help"].callback())
 		} else if userInput == "exit" {
-			getCliCommand()["exit"]
+			fmt.Print(getCliCommand()["exit"].callback())
 		}
 	}
 }
