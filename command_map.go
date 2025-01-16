@@ -1,40 +1,37 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"io"
-	"log"
-	"net/http"
 )
 
-type config struct {
-	Next     string
-	Previous string
-}
-
-type pokeJson struct {
-	Count    int    `json:"count"`
-	Next     string `json:"next"`
-	Previous any    `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		URL  string `json:"url"`
-	} `json:"results"`
-}
-
-func commandMap(*config) error {
-	res, err := http.Get("https://pokeapi.co/api/v2/location-area/")
+func callbackMap(cfg *config) error {
+	resp, err := cfg.pokeapiClient.ListLocationAreas(cfg.nextLocationAreaURL)
 	if err != nil {
 		return err
 	}
-	body, err := io.ReadAll(res.Body)
-	defer res.Body.Close()
-	if res.StatusCode > 299 {
-		log.Fatalf("Response failed with status code: %d and\nbody: %s\n", res.StatusCode, body)
+	fmt.Println("Location areas:")
+	for _, area := range resp.Results {
+		fmt.Printf(" - %s\n", area.Name)
 	}
+	cfg.nextLocationAreaURL = resp.Next
+	cfg.prevLocationAreaURL = resp.Previous
+	return nil
+}
+
+func callbackMapb(cfg *config) error {
+	if cfg.prevLocationAreaURL == nil {
+		return errors.New("you're on the first page")
+	}
+	resp, err := cfg.pokeapiClient.ListLocationAreas(cfg.prevLocationAreaURL)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-	fmt.Printf("%s", body)
+	fmt.Println("Location areas:")
+	for _, area := range resp.Results {
+		fmt.Printf(" - %s\n", area.Name)
+	}
+	cfg.nextLocationAreaURL = resp.Next
+	cfg.prevLocationAreaURL = resp.Previous
 	return nil
 }
