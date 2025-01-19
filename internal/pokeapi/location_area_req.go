@@ -16,6 +16,8 @@ func (c *Client) ListLocationAreas(pageURL *string) (LocationAreasResp, error) {
 	}
 
 	if val, ok := c.cache.Get(fullURL); ok {
+		// cache hit
+		fmt.Println("cache hit!")
 		locationsResp := LocationAreasResp{}
 		err := json.Unmarshal(val, &locationsResp)
 		if err != nil {
@@ -24,6 +26,7 @@ func (c *Client) ListLocationAreas(pageURL *string) (LocationAreasResp, error) {
 
 		return locationsResp, nil
 	}
+	fmt.Println("cache miss!")
 
 	req, err := http.NewRequest("GET", fullURL, nil)
 	if err != nil {
@@ -51,6 +54,7 @@ func (c *Client) ListLocationAreas(pageURL *string) (LocationAreasResp, error) {
 		return LocationAreasResp{}, err
 	}
 
+	c.cache.Add(fullURL, dat)
 	return locationAreasResp, nil
 }
 
@@ -59,6 +63,8 @@ func (c *Client) GetLocationArea(locationAreaName string) (LocationArea, error) 
 	fullURL := baseURL + endpoint
 
 	if val, ok := c.cache.Get(fullURL); ok {
+		// cache hit
+		fmt.Println("cache hit!")
 		locationArea := LocationArea{}
 		err := json.Unmarshal(val, &locationArea)
 		if err != nil {
@@ -67,6 +73,7 @@ func (c *Client) GetLocationArea(locationAreaName string) (LocationArea, error) 
 
 		return locationArea, nil
 	}
+	fmt.Println("cache miss!")
 
 	req, err := http.NewRequest("GET", fullURL, nil)
 	if err != nil {
@@ -93,6 +100,8 @@ func (c *Client) GetLocationArea(locationAreaName string) (LocationArea, error) 
 	if err != nil {
 		return LocationArea{}, err
 	}
+
+	c.cache.Add(fullURL, dat)
 
 	return locationArea, nil
 }
