@@ -5,7 +5,16 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/StanimalTheMan/pokedexcli/internal/pokeapi"
 )
+
+type config struct {
+	pokeapiClient       pokeapi.Client
+	nextLocationAreaURL *string
+	prevLocationAreaURL *string
+	caughtPokemon       map[string]pokeapi.Pokemon
+}
 
 func startRepl(cfg *config) {
 	scanner := bufio.NewScanner(os.Stdin)
