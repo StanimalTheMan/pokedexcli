@@ -11,7 +11,6 @@ func (c *Client) GetPokemon(pokemonName string) (Pokemon, error) {
 	endpoint := "/pokemon/" + pokemonName
 	fullURL := baseURL + endpoint
 
-	fmt.Printf("Throwing a Pokeball at %s\n", pokemonName)
 	if val, ok := c.cache.Get(fullURL); ok {
 		// cache hit
 		fmt.Println("cache hit!")
